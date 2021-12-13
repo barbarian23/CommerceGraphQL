@@ -1,7 +1,7 @@
 var admin = require("firebase-admin");
-var { PROJECT_ID, PRIVATE_KEY_ID,PRIVATE_KEY,
-      CLIENT_EMAIL, CLIENT_ID, AUTH_URI,
-      TOKEN_URI, AUTH_PROVIDER_X509_CERT_URL, CLIENT_X509_CERT_URL} = require("../config/firebase-notification.config")
+var { PROJECT_ID, PRIVATE_KEY_ID, PRIVATE_KEY,
+  CLIENT_EMAIL, CLIENT_ID, AUTH_URI,
+  TOKEN_URI, AUTH_PROVIDER_X509_CERT_URL, CLIENT_X509_CERT_URL } = require("../config/firebase-notification.config")
 
 var serviceAccount = {
   "type": "service_account",
@@ -17,7 +17,10 @@ var serviceAccount = {
 }
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  //credential: admin.credential.cert(serviceAccount),
+  projectId: process.env.PROJECT_ID,
+  clientEmail: process.env.CLIENT_EMAIL,
+  privateKey: process.env.PRIVATE_KEY?.replace(/\\n/g, '\n'),
   databaseURL: "https://uplog-99fc1-default-rtdb.firebaseio.com"
 });
 
@@ -26,13 +29,14 @@ const options = {
   timeToLive: 60 * 60 * 24
 };
 
-const send = function (registrationToken, message, onSuccess, onFailed){
+const send = function (registrationToken, message, onSuccess, onFailed) {
   admin.messaging().sendToDevice(registrationToken, message, options)
-  .then( response => {
-    onSuccess("Notification sent successfully")})
-  .catch( error => {
-    onFailed(error);
-  });
+    .then(response => {
+      onSuccess("Notification sent successfully")
+    })
+    .catch(error => {
+      onFailed(error);
+    });
 }
 
 module.exports = {

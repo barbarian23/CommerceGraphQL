@@ -1,13 +1,12 @@
 const {
-  graphql,
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  buildSchema
-} = require('graphql');
+  connect,
+  findAll,
+  insert
+} = require('../../service/mongo.service');
 
-const product = buildSchema(`
+const { MONGO_CONNECTION_STRING, MONGO_DB, TABLE_PRODUCT } = require("../../config/mongo.config");
+
+const product = `
     type Product {
       productName: String
       productDetail: String
@@ -15,9 +14,12 @@ const product = buildSchema(`
       totalNumber: Int
     }
     type Query {
-      products: [Product]
+      products: [Product],
     }
-`);
+    type Mutation {
+      insert(productName: String, productDetail: String, deliveryFee: String, totalNumber: Int): Boolean
+    }
+`;
 
 const fakeList = [
   {
@@ -34,18 +36,41 @@ const fakeList = [
   },
 ];
 
-const getProduct = function () {
+//resolvers
+const getProducts = async function () {
   //from the fewest total number to the greates number
-  return fakeList.sort((first, second) => first.totalNumber - second.totalNumber);;
+  try {
+    let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
+    let tList = await findAll(db, TABLE_PRODUCT);
+    return tList.sort((first, second) => first.totalNumber - second.totalNumber);
+  } catch (e) {
+    return [];
+  }
 }
 
-var rootProduct = {
+const insertNew = async function (productName, productDetail, deliveryFee, totalNumber) {
+  //return fakeList.push(product);
+  try {
+    let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
+    await insert(db, TABLE_PRODUCT, {
+      productName, productDetail, deliveryFee, totalNumber
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+var productResolvers = {
   Query: {
-    products: getProduct
+    products: getProducts
+  },
+  Mutation: {
+    insert: insertNew,
   }
 };
 
 module.exports = {
   product,
-  rootProduct
+  productResolvers
 }
