@@ -1,8 +1,7 @@
-const FACEBOOK_API_KEY = "721584098301457";//FACEBOOK_API_KEY
-const FACEBOOK_API_SECRET = "23d5e19704ac7df876be212ceef227ff";//FACEBOOK_API_SECRET
-const CALLBACK_URL = "http://localhost:4000/registration/facebook/callback";
-
-
+require("dotenv").config();
+const FACEBOOK_API_KEY = process.env.FACEBOOK_API_KEY;//FACEBOOK_API_KEY
+const FACEBOOK_API_SECRET = process.env.FACEBOOK_API_SECRET;//FACEBOOK_API_SECRET
+const CALLBACK_URL = process.env.CALLBACK_URL;
 
 module.exports = {
   FACEBOOK_API_KEY,
