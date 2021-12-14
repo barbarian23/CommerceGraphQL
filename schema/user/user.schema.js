@@ -2,7 +2,8 @@ const  {
   connect,
   findAll,
   findOne,
-  update
+  update,
+  insert
 } = require ('../../service/mongo.service');
 
 const { MONGO_CONNECTION_STRING, MONGO_DB, TABLE_USER} = require("../../config/mongo.config");
@@ -18,29 +19,14 @@ const user = `
         users: [User]
     }
     type Mutation {
-        enable(fToken: String!): Boolean
-        registerProduct(fToken: String!, productName: String!): Boolean
+        registerUser(userName: String, userEnableNotification: String, productName: String, firebaseToken: String): Boolean
+        enable(fToken: String): Boolean
+        registerProduct(fToken: String, productName: String): Boolean
     }
 `;
 
-const fakeList = [
-  {
-    userName: 'user one',
-    productRegister: true,
-    productName: '[]',
-    firebaseToken: 'token 1 send by front end',
-  },
-  {
-    userName: 'user two',
-    productRegister: false,
-    productName: '[]',
-    firebaseToken: 'token 2 send by front end',
-  },
-];
-
 //resolvers
 const getUser = async function () {
- // return fakeList;
   try {
     let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
     let tList = await findAll(db, TABLE_USER);
@@ -50,17 +36,23 @@ const getUser = async function () {
   }
 }
 
-const setEnable = async function (fToken) {
-  // let result = {};
-  // fakeList.some(item => {
-  //   if (item.firebaseToken === fToken) {
-  //     item.productRegister = true;
-  //     result = item;
-  //     return true;
-  //   }
-  // });
-  // return result;
+const registerUser = async function (_, {registerUser, userEnableNotification, productName, firebaseToken}) {
   try {
+    await insert(db, TABLE_USER, {
+      registerUser: registerUser,
+      userEnableNotification: userEnableNotification,
+      productName: productName,
+      firebaseToken: firebaseToken
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+const setEnable = async function (_, {fToken}) {
+  try {
+    console.log("setEnable",fToken);
     let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
      await update(db, TABLE_USER, {firebaseToken: fToken}, {$set: { productRegister: true }});
     return true;
@@ -70,15 +62,7 @@ const setEnable = async function (fToken) {
 
 }
 
-const registerProduct = async function (fToken, productName) {
-  // let result = fakeList.some(item => {
-  //   if (item.firebaseToken  === fToken) {
-  //     item.productName.push(productName);
-  //     return true;
-  //   }
-  // });
-  // return result;
-
+const registerProduct = async function (_, {fToken, productName}) {
   try {
     let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
     let tUser = await findOne(db, TABLE_USER, {firebaseToken: fToken });
@@ -94,6 +78,7 @@ var userResolvers = {
     users: getUser,
   },
   Mutation: {
+    registerUser: registerUser,
     enable: setEnable,
     registerProduct: registerProduct
   }

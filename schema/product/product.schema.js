@@ -4,7 +4,11 @@ const {
   insert
 } = require('../../service/mongo.service');
 
-const { MONGO_CONNECTION_STRING, MONGO_DB, TABLE_PRODUCT } = require("../../config/mongo.config");
+const {
+  MONGO_CONNECTION_STRING,
+  MONGO_DB,
+  TABLE_PRODUCT
+} = require("../../config/mongo.config");
 
 const product = `
     type Product {
@@ -21,21 +25,6 @@ const product = `
     }
 `;
 
-const fakeList = [
-  {
-    productName: 'motobike',
-    productDetail: 'Kawasaki Z1000',
-    deliveryFee: '50',
-    totalNumber: 2,
-  },
-  {
-    productName: 'motobike',
-    productDetail: 'Kawasaki Zx10',
-    deliveryFee: '25',
-    totalNumber: 1,
-  },
-];
-
 //resolvers
 const getProducts = async function () {
   //from the fewest total number to the greates number
@@ -48,20 +37,24 @@ const getProducts = async function () {
   }
 }
 
-const insertNew = async function (productName, productDetail, deliveryFee, totalNumber) {
-  //return fakeList.push(product);
+const insertNew = async function (_, {productName,productDetail,deliveryFee,totalNumber}) {
   try {
     let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
+    console.log("productName", productName, "productDetail", productDetail, "deliveryFee", deliveryFee, "totalNumber", totalNumber);
     await insert(db, TABLE_PRODUCT, {
-      productName, productDetail, deliveryFee, totalNumber
+      productName: productName,
+      productDetail: productDetail,
+      deliveryFee: deliveryFee,
+      totalNumber: totalNumber
     });
     return true;
   } catch (e) {
+    console.log(e);
     return false;
   }
 }
 
-var productResolvers = {
+const productResolvers = {
   Query: {
     products: getProducts
   },

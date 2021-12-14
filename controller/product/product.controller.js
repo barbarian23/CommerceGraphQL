@@ -1,9 +1,10 @@
 const { createApolloFetch } = require('apollo-fetch');
+const { QUERY_GRAPHQL_URL } = require("../../constant/common.constant");
 
 const getAllProducts = function (req, res) {
 
   const fetch = createApolloFetch({
-    uri: 'http://localhost:4000/graphql',
+    uri: QUERY_GRAPHQL_URL,
   });
 
   fetch({
@@ -15,7 +16,7 @@ const getAllProducts = function (req, res) {
             totalNumber
           }
       }
-      `,
+      `
   }).then(function(result){
     console.log(result.data);
     res.send(JSON.stringify(result.data));

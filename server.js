@@ -11,11 +11,11 @@ const http = require('http');
 const cors = require('cors')
 
 const { router } = require('./router/router');
-const { PASSPORT_SECRET, PASSPORT_KEY, PORT } = require("./constant/common.constant");
+const { PASSPORT_SECRET, PASSPORT_KEY, PORT, GRAPHQL_URL } = require("./constant/common.constant");
 const { FACEBOOK_API_KEY, FACEBOOK_API_SECRET, CALLBACK_URL } = require("./config/facebook.config");
 const { MONGO_CONNECTION_STRING } = require("./config/mongo.config");
 const { connectMongo } = require('./service/mongo.service');
-//const { dataSchema } = require('./schema/rootSchema');
+
 (async ()=>{
 // Passport session setup
 passport.serializeUser(function (user, done) {
@@ -47,8 +47,6 @@ app.use(session({ secret: PASSPORT_SECRET, key: PASSPORT_KEY }));  //create sess
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
 app.use('/', router);
 
 const httpServer = http.createServer(app);
@@ -56,17 +54,16 @@ const httpServer = http.createServer(app);
 const { user, userResolvers }  = require('./schema/user/user.schema');
 const { product, productResolvers }  = require('./schema/product/product.schema');
 const { merge } = require('lodash');
-const {makeExecutableSchema} = require('@graphql-tools/schema');
+// const {makeExecutableSchema} = require('@graphql-tools/schema');
 
 const dataSchema = {
   typeDefs: [ user,product ],
   resolvers: merge(userResolvers, productResolvers),
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   context: ({ req }) => {
-    // const token = req.headers.authorization || '';
-    // return { user };
+    // retrict user that not login
     if (!req.isAuthenticated()) {
-      throw new AuthenticationError('you must be logged in');
+      throw new Error('you must be logged in though facebook');
     }
   },
 };
@@ -76,8 +73,8 @@ const apoloServer = new ApolloServer(dataSchema);
 await apoloServer.start();
 apoloServer.applyMiddleware({
   app,
-  cors: true,
-  path: '/graphql' // set cors for disable connection from out side
+  //cors: true, // set cors for disable connection from out side
+  path: GRAPHQL_URL 
 });
 
 //whitelist
