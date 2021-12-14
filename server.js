@@ -62,9 +62,9 @@ const dataSchema = {
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   context: ({ req }) => {
     // retrict user that not login
-    // if (!req.isAuthenticated()) {
-    //   throw new Error('you must be logged in though facebook');
-    // }
+    if (!req.isAuthenticated()) {
+      throw new Error('you must be logged in though facebook');
+    }
   },
 };
 
