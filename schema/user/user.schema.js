@@ -66,9 +66,17 @@ const registerProduct = async function (_, {fToken, productName}) {
   try {
     let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
     let tUser = await findOne(db, TABLE_USER, {firebaseToken: fToken });
-    await update(db, TABLE_USER, {firebaseToken: fToken }, {$set: { productName : tUser.productName.push(productName) }});
+    console.log(tUser);
+    if(tUser.productName[0] == ""){
+      tUser.productName[0] = productName;
+    } else {
+    await tUser.productName.push(productName);
+    }
+    console.log(tUser);
+    await update(db, TABLE_USER, {firebaseToken: fToken }, {$set: { productName : tUser.productName }});
     return true;
   } catch (e) {
+    console.log(e);
     return false;
   }
 }
