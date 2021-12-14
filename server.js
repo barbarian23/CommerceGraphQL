@@ -7,8 +7,9 @@ const bodyParser = require('body-parser');
 const app = express();
 const { ApolloServer } = require('apollo-server-express');
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
-const http = require('http');
-// const cors = require('cors');
+const http = require('http');const expressPlayground = require('graphql-playground-middleware-express')
+.default;
+
 
 const { router } = require('./router/router');
 const { PASSPORT_SECRET, PASSPORT_KEY, PORT, GRAPHQL_URL } = require("./constant/common.constant");
@@ -35,7 +36,7 @@ passport.use(new FacebookStrategy({
     process.nextTick(function () {
       console.log(accessToken, refreshToken, profile, done);
       
-      return done("profile", profile);
+      return done(null, profile);
     });
   }
 ));
@@ -43,8 +44,7 @@ passport.use(new FacebookStrategy({
 app.use(cookieParser()); //Parse cookie
 app.use(bodyParser.urlencoded({ extended: false })); //Parse body
 app.use(bodyParser.json());
-app.use(session({ secret: PASSPORT_SECRET, key: PASSPORT_KEY,saveUninitialized: true,
-  resave: true, }));  //create session
+app.use(session({ secret: PASSPORT_SECRET, key: PASSPORT_KEY }));  //create session
   
 app.use(passport.initialize());
 app.use(passport.session());
@@ -64,9 +64,10 @@ const dataSchema = {
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   context: ({ req }) => {
     // retrict user that not login
-    if (!req.isAuthenticated()) {
-      throw new Error('you must be logged in though facebook');
-    }
+    console.log(req.isAuthenticated());
+    // if (!req.isAuthenticated()) {
+    //   throw new Error('you must be logged in though facebook');
+    // }
   },
 };
 
@@ -78,6 +79,9 @@ apoloServer.applyMiddleware({
   //cors: true, // set cors for disable connection from out side
   path: GRAPHQL_URL 
 });
+
+
+//app.get('/playground', expressPlayground({ endpoint: GRAPHQL_URL }))
 
 //whitelist
 // var corsOptions = {

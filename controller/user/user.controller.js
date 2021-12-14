@@ -63,7 +63,7 @@ dailyNotification(
 //callback url for login facebook successfully
 const faceBookLoginCallback = async function (req, res) {
   console.log("req",req,"res",res,"is authen",req.isAuthenticated());
-  res.redirect(GRAPHQL_URL);
+  //res.redirect(GRAPHQL_URL);
 }
 
 module.exports = {
