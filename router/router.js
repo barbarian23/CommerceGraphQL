@@ -14,7 +14,6 @@ const {
 const { getAllProducts } = require('../controller/product/product.controller');
 
 router.get('/', function (req, res) {
-  console.log("get",req.isAuthenticated());
   res.send("This is a test sample");
 });
 
@@ -24,9 +23,8 @@ router.get('/registration', passport.authenticate('facebook', { scope: 'email' }
 //API callback when facebook Login
 
 router.get('/registration/facebook/callback',
-passport.authenticate('facebook', { successRedirect : '/', failureRedirect: '/' }),
+passport.authenticate('facebook', { successRedirect : PLAYGORUND_URL, failureRedirect: '/' }),
 function(req, res) {
-  console.log("callback",req.isAuthenticated());
   //res.redirect('/');
 });
 

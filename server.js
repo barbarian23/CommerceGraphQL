@@ -49,6 +49,7 @@ app.use(session({ secret: PASSPORT_SECRET, key: PASSPORT_KEY }));  //create sess
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 app.use('/', router);
 
 const httpServer = http.createServer(app);
@@ -56,18 +57,16 @@ const httpServer = http.createServer(app);
 const { user, userResolvers }  = require('./schema/user/user.schema');
 const { product, productResolvers }  = require('./schema/product/product.schema');
 const { merge } = require('lodash');
-// const {makeExecutableSchema} = require('@graphql-tools/schema');
 
 const dataSchema = {
   typeDefs: [ user,product ],
   resolvers: merge(userResolvers, productResolvers),
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-  context: ({ req }) => {
+  context: async ({ req, res }) => {
     // retrict user that not login
-    console.log(req.isAuthenticated());
-    // if (!req.isAuthenticated()) {
-    //   throw new Error('you must be logged in though facebook');
-    // }
+    if (!req.isAuthenticated()) {
+      throw new Error('you must be logged in though facebook');
+    }
   },
 };
 
@@ -76,18 +75,10 @@ const apoloServer = new ApolloServer(dataSchema);
 await apoloServer.start();
 apoloServer.applyMiddleware({
   app,
-  //cors: true, // set cors for disable connection from out side
   path: GRAPHQL_URL 
 });
 
-
-//app.get('/playground', expressPlayground({ endpoint: GRAPHQL_URL }))
-
-//whitelist
-// var corsOptions = {
-//   origin: true,
-//   optionsSuccessStatus: 200 
-// }
+app.get('/playground', expressPlayground({ endpoint: GRAPHQL_URL }))
 
 httpServer.listen({ port: PORT }, ()=>{
   console.log(`Server is listening on port ${PORT}`);
