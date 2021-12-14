@@ -5,7 +5,8 @@ const {
   dailyNotification
 } = require('../../service/schedule.service');
 const {
-  QUERY_GRAPHQL_URL
+  QUERY_GRAPHQL_URL,
+  GRAPHQL_URL
 } = require("../../constant/common.constant");
 
 const sendNotificationToUser = async function () {
@@ -61,7 +62,8 @@ dailyNotification(
 
 //callback url for login facebook successfully
 const faceBookLoginCallback = async function (req, res) {
-  res.redirect('/home');
+  console.log("req",req,"res",res,"is authen",req.isAuthenticated());
+  res.redirect(GRAPHQL_URL);
 }
 
 module.exports = {

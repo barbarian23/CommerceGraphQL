@@ -26,6 +26,7 @@
     "firebase-admin": "^10.0.0",
     "fs": "0.0.1-security",
     "graphql": "^16.1.0",
+    "graphql-playground-middleware-express": "^1.7.23",
     "graphql-tools": "^8.2.0",
     "http": "0.0.1-security",
     "lodash": "^4.17.21",

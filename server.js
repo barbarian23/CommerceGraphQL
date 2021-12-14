@@ -8,13 +8,12 @@ const app = express();
 const { ApolloServer } = require('apollo-server-express');
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
 const http = require('http');
-const cors = require('cors')
+// const cors = require('cors');
 
 const { router } = require('./router/router');
 const { PASSPORT_SECRET, PASSPORT_KEY, PORT, GRAPHQL_URL } = require("./constant/common.constant");
 const { FACEBOOK_API_KEY, FACEBOOK_API_SECRET, CALLBACK_URL } = require("./config/facebook.config");
-const { MONGO_CONNECTION_STRING } = require("./config/mongo.config");
-const { connectMongo } = require('./service/mongo.service');
+
 
 (async ()=>{
 // Passport session setup
@@ -35,6 +34,7 @@ passport.use(new FacebookStrategy({
   function (accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
       console.log(accessToken, refreshToken, profile, done);
+      
       return done("profile", profile);
     });
   }
@@ -43,7 +43,9 @@ passport.use(new FacebookStrategy({
 app.use(cookieParser()); //Parse cookie
 app.use(bodyParser.urlencoded({ extended: false })); //Parse body
 app.use(bodyParser.json());
-app.use(session({ secret: PASSPORT_SECRET, key: PASSPORT_KEY }));  //create session
+app.use(session({ secret: PASSPORT_SECRET, key: PASSPORT_KEY,saveUninitialized: true,
+  resave: true, }));  //create session
+  
 app.use(passport.initialize());
 app.use(passport.session());
 
