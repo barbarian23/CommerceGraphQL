@@ -25,7 +25,7 @@ router.get('/registration', passport.authenticate('facebook', { scope: 'email' }
 router.get('/registration/facebook/callback',
 passport.authenticate('facebook', { successRedirect : PLAYGORUND_URL, failureRedirect: '/' }),
 function(req, res) {
-  //res.redirect('/');
+  res.redirect(PLAYGORUND_URL);
 });
 
 //The API for viewing the product list

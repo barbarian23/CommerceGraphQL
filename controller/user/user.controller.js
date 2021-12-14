@@ -9,27 +9,19 @@ const {
   GRAPHQL_URL
 } = require("../../constant/common.constant");
 
+const {connect,findAll} = require('../../service/mongo.service');
+const {MONGO_CONNECTION_STRING, MONGO_DB, TABLE_USER} = require("../../config/mongo.config");
+
+
 const sendNotificationToUser = async function () {
   //cronjob get all user then send notification to users who have notification enabled
   try {
-    const fetch = createApolloFetch({
-      uri: QUERY_GRAPHQL_URL,
-    });
-    let result = await fetch({
-      query: `query sendNotificationToUser {
-                users {
-                    userName
-                    userEnableNotification
-                    productName
-                    firebaseToken
-                  }
-                }
-        `
-    });
+    let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
+    let tList = await findAll(db, TABLE_USER);
 
     //get all user
-    let allUsers = result.data.users;
-    console.log("sendNotificationToUser", allUsers);
+    console.log("sendNotificationToUser", tList);
+    let allUsers = tList;
     if (allUsers) {
       allUsers.forEach(function (item) {
         if (item.productRegister) {

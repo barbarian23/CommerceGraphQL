@@ -1,29 +1,21 @@
 const { createApolloFetch } = require('apollo-fetch');
-const { QUERY_GRAPHQL_URL } = require("../../constant/common.constant");
+const { QUERY_GRAPHQL_UR} = require("../../constant/common.constant");
+const {MONGO_CONNECTION_STRING, MONGO_DB, TABLE_PRODUCT} = require("../../config/mongo.config");
 
-const getAllProducts = function (req, res) {
+const {connect,findAll} = require('../../service/mongo.service');
 
-  const fetch = createApolloFetch({
-    uri: QUERY_GRAPHQL_URL,
-  });
-
-  fetch({
-    query: `query Product {
-          products {
-            productName
-            productDetail
-            deliveryFee
-            totalNumber
-          }
-      }
-      `
-  }).then(function(result){
-    console.log(result.data);
-    res.send(JSON.stringify(result.data));
-  }).catch(function(err){
+const getAllProducts = async function (req, res) {
+  try{
+    let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
+    let tList = await findAll(db, TABLE_PRODUCT);
+    res.send({data:tList});
+  }catch(err){
     console.log(err);
     res.send(err);
-  });
+  }
+
+
+  
 }
 
 module.exports = {
