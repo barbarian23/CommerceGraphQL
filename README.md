@@ -1,5 +1,5 @@
 <!-- GETTING STARTED -->
-## GraphQLSample
+## CommerceGraphQL
 
 
 ### Install
@@ -26,6 +26,9 @@
    ```sh
    mongorestore -d TestSample /path_to_your_database/
    ```
+   ```sh
+   Double check the ProductName field in User Collection, it should be an array.If not please change this field to Array
+   ```
 6. Start app
      ```sh
    npm start
@@ -49,38 +52,44 @@ This project using Facebook login as a SNS ID
 ![image](https://user-images.githubusercontent.com/48834179/146058475-32a86a1e-5a8c-4312-9d32-0459826c2604.PNG)
 3. Get a list of products
 `
-query Product{
-  products {
-    productName
-    productDetail
-    deliveryFee
-    totalNumber
+query {
+    products{
+      productName
+      productDetail
+      deliveryFee
+      totalNumber
+    }
   }
-}
 `
 
 4. Register a product
 
 	4.1. Create A product 
 	```sh
-	mutation CreateAProduct {
-	  insert(productName: "Toyota",
-	    productDetail: "Toyota I9", 
-	    deliveryFee: "50", 
-	    totalNumber: 2) 
-	}
+	mutation {
+	    registerUser(
+	      userName: "user three"
+	      userEnableNotification: false
+	      productName: [""]
+	      firebaseToken: "token 3 send by front end"
+	    )
+	  }
 	```
 	4.2. Register Product to user
 	***(Product must exist before registering to user)***
 	```sh
-	mutation RegisterProductToUser {
-	  registerProduct(fToken: "token 1 send by front end",
-	    productName: "Toyota I9") 
-	}
+	mutation {
+	    registerProduct(
+	      fToken: "token 2 send by front end"
+	      productName: "Toyota"
+	    )
+	  }
 	```
 5. Subscribe notifications via Firebase token
 `
-mutation EnableNotification {
-  enable(fToken:"token 1 send by front end") 
+mutation {
+    enable(
+      fToken: "token 3 send by front end"
+    )
 }
 `
