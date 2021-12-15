@@ -26,6 +26,9 @@
    ```sh
    mongorestore -d TestSample /path_to_your_database/
    ```
+   ```sh
+   Double check the ProductName field in User Collection, it should be an array.If not please change this field to Array
+   ```
 6. Start app
      ```sh
    npm start
