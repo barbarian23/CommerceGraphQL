@@ -86,7 +86,7 @@ test("register User", async () => {
     registerUser(
       userName: "user three"
       userEnableNotification: false
-      productName: [""]
+      productName: ["Yamaha"]
       firebaseToken: "token 3 send by front end"
     )
   }

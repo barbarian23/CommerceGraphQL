@@ -19,7 +19,7 @@ const user = `
         users: [User]
     }
     type Mutation {
-        registerUser(userName: String, userEnableNotification: String, productName: String, firebaseToken: String): Boolean
+        registerUser(userName: String, userEnableNotification: Boolean, productName: [String], firebaseToken: String): Boolean
         enable(fToken: String): Boolean
         registerProduct(fToken: String, productName: String): Boolean
     }
@@ -38,14 +38,17 @@ const getUser = async function () {
 
 const registerUser = async function (_, {registerUser, userEnableNotification, productName, firebaseToken}) {
   try {
-    await insert(db, TABLE_USER, {
+    let db = await connect(MONGO_CONNECTION_STRING, MONGO_DB);
+    let result =await insert(db, TABLE_USER, {
       registerUser: registerUser,
       userEnableNotification: userEnableNotification,
       productName: productName,
       firebaseToken: firebaseToken
     });
+    console.log("res",result);
     return true;
   } catch (e) {
+    console.log("e",e);
     return false;
   }
 }
