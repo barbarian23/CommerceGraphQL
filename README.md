@@ -1,5 +1,5 @@
 <!-- GETTING STARTED -->
-## GraphQLSample
+## CommerceGraphQL
 
 
 ### Install
